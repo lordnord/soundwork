@@ -7,15 +7,22 @@ changed = wave.open('new.wav', 'w')
 
 changed.setparams(mono.getparams())
 
+qrate = mono.getframerate() / 360.0
+
 def process(sample, pos):
     """
     Do something with sample as an integers in range 0-255
     """
-    if sample == 0:
-        res = 0
-    else:
+    # if sample == 0:
+    #     res = 0
+    # else:
+        # res = sample * 2
     
-        res = sample * 2
+    # Generates a sine wave with frequency = 50 and amplitude = 127.
+    freq = 50
+    amp = 127
+    res = math.sin(math.radians(pos * freq) / qrate) * amp
+    
         
     if res > 127:
         res = 127
