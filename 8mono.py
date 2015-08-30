@@ -11,10 +11,8 @@ qrate = mono.getframerate() / 360.0
 
 
 def amplit(percent):
-    full = 2 ** (8 ** mono.getsampwidth()) - 1
-    half = full / 2 + 1
-    
-    out = (percent/100.0)*full - half
+    full = 2 ** (8 ** mono.getsampwidth()) / 2 - 1
+    out = percent * full /100.0
     return int(out)
     
 def process(sample, pos):
