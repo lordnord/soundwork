@@ -9,6 +9,14 @@ changed.setparams(mono.getparams())
 
 qrate = mono.getframerate() / 360.0
 
+
+def amplit(percent):
+    full = 2 ** (8 ** mono.getsampwidth())
+    half = full / 2
+    
+    out = (percent/100.0)*full - half
+    return out
+    
 def process(sample, pos):
     """
     Do something with sample as an integers in range 0-255
