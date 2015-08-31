@@ -13,15 +13,21 @@ class Mono:
 
 class ReadMono(wave.Wave_read, Mono):
     format = (None, 'B', 'H') # 8bit or 16bit
-    def getsamples(self, number=1):
-        # когда number > 1 последняя порция может быть с неправильной длиной
-        # сейчас чтобы этого не происходило количество семплов должно
-        # делиться на number без остатка
-        for pos in range(self.getnframes() / number):
+    
+    def readsample(self, sample):
+        format = self.format[self.getsampwidth()]
+        return struct.unpack('<' + format, sample)
+
+    def getsamples(self):
+        for pos in range(self.getnframes()):
             samples = self.readframes(number)
             format = self.format[self.getsampwidth()]
             yield struct.unpack('<' + format*number, samples)
             
+     def getwaves(self):
+        for pos in range(self.getnframes()):
+            pass
+
             
 class WriteMono(wave.Wave_write):
     def gen(self, process, number=1):
