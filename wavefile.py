@@ -6,38 +6,43 @@ import random
 import math
 
 class Mono:
+    FORMATS = (None, 'B', 'H') # 8bit or 16bit
+    
+    @property
+    def format(self):
+        return '<' + self.FORMATS[self._sampwidth]
+        
     @property
     def max(self):
         return 2 ** (8 ** self.getsampwidth() - 1)
 
 
 class ReadMono(wave.Wave_read, Mono):
-    format = (None, 'B', 'H') # 8bit or 16bit
     
-    def readsample(self, sample):
-        format = self.format[self.getsampwidth()]
-        return struct.unpack('<' + format, sample)
+    def intsample(self, bytesample):
+        return struct.unpack(self.format, bytesample)[0] - self.max
 
     def getsamples(self):
-        for pos in range(self.getnframes()):
-            samples = self.readframes(number)
-            format = self.format[self.getsampwidth()]
-            yield struct.unpack('<' + format*number, samples)
+        for pos in range(self._nframes):
+            sample = self.readframes(1)
+            yield self.intsample(sample)
             
      def getwaves(self):
-        for pos in range(self.getnframes()):
+        for pos in range(self._nframes):
             pass
 
             
-class WriteMono(wave.Wave_write):
-    def gen(self, process, number=1):
-        for pos in range(self.getnframes()):
-            data =  struct.unpack('<' + format*number, samples)
-            self.writeframes()
+class WriteMono(wave.Wave_write, Mono):
+        
+    def bytesample(self, intsample):
+        return struct.pack(self.format, intsample + self.max)
+        
+    def gen(self, process):
+        for pos in range(self._nframes):
+            sample = process(pos)
+            self.writeframes(self.bytesample(sample))
             
-    def fromfile(self, file, process, number=1):
-        for samples in file.getsamples(number):
-            # тут чтение по порциям тоже вызывает проблемы
-            # надо вычитать из каждого числа/семпла в списке 128 (32768)
-            
-            out = process((i - file.max for i in samples), pos) # и потом прибавлять.
+    def writefromfile(self, file, process):
+        for pos, sample in enumerate(file.getsamples()):
+            out = process(sample, pos)
+            self.writeframes(self.bytesample(out))
