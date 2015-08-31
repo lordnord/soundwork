@@ -23,7 +23,7 @@ for pos in range(mono.getnframes()):
     print '\r', pos,
     sample = mono.readframes(1)
     intsample = struct.unpack('<H', sample)[0]
-    out = process(intsample - 65536, pos) + 65536
+    out = process(intsample - 32768, pos) + 32768
     tochanged = struct.pack('<H', out)
     changed.writeframes(tochanged)
     
