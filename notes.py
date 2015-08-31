@@ -1,4 +1,14 @@
 
+def muslength(l, bpm=None):
+    # Returns note length in ms for BPM
+    if bpm == None:
+        bpm = muslength.last
+    measure = 60000.0 / bpm
+    return measure * l
+
+muslength.last = 70
+
+
 # Note frequencies for 10th octave
 notes = {
 'C'  : 16744.036,
