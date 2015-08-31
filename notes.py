@@ -1,4 +1,9 @@
 
+def muspitch(note):
+    d = 10 - note[1]
+    return notes[note[0].upper()] / (2 ** d)
+
+
 def muslength(l, bpm=None):
     # Returns note length in ms for BPM
     if bpm == None:
