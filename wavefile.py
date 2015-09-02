@@ -57,8 +57,10 @@ class WriteMono(wave.Wave_write, Mono):
     def bytesample(self, intsample):
         return struct.pack(self.format, intsample + self.max)
         
-    def gen(self, process):
-        for pos in range(self._nframes):
+    def gen(self, process, nsamples=0):
+        if not nsamples:
+            nsamples = self._nframes - self.tell()
+        for pos in range(nsamples):
             sample = process(self, pos)
             self.writeframes(self.bytesample(sample))
             
