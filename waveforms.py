@@ -11,3 +11,7 @@ def process(sample, pos):
     elif res < -128:
         res = -128
     return res
+
+def sine(freq, amp=100):
+    def wrapped(file):
+        return math.sin
