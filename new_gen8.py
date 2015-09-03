@@ -2,12 +2,13 @@ import random
 import math
 import wavefile
 
-def proc(file, pos):
-    """Generates a sine wave with frequency = 50 and amplitude = 127"""
-    freq = 6050
-    qrate = file.getframerate() / 360.0
-    res = math.sin(pos * freq) * file.amplit(100)
-    return int(res)
+def sine(freq):
+    def wrapped(file, pos):
+        w = (2 * math.pi * freq) / file.getframerate()
+        res = math.sin(pos * w) * file.amplit(100)
+        return int(res)
+    return wrapped
+    
 
 
 BPM = 70
@@ -21,5 +22,5 @@ new = wavefile.open('build2.wav', 'w')
 # lenght = new.len(sequence)
 lenght = 1000
 new.set(8, 44100, lenght)
-new.gen(sequence)
+new.gen(sine(freq=220))
 del new
