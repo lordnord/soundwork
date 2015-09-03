@@ -1,3 +1,5 @@
+from __future__ import division
+
 # Note frequencies for 10th octave
 NOTES = {
 'C'  : 16744.036,
@@ -42,7 +44,8 @@ def parser(melody):
         else:
             len, sign, octave = note.split('.')
             freq = NOTES[sign] / (2 ** (10-int(octave)))
-        yield (freq, int(len))
+        yield (freq, int(muslength(eval(len))))
+        # yield (freq, int(len))
 
 def seqencelenght(seq, bpm=None):
     # BPM is temporary not used.
