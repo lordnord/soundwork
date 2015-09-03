@@ -48,7 +48,7 @@ class WriteMono(wave.Wave_write, Mono):
                 1,       # self._nchannels
                 bit / 8, # self._nsampwidth
                 samplerate,
-                msec * (samplerate / 1000), # self._nframes
+                msec * samplerate / 1000, # self._nframes
                 'NONE',
                 'not compressed',
                 )
@@ -57,9 +57,11 @@ class WriteMono(wave.Wave_write, Mono):
     def bytesample(self, intsample):
         return struct.pack(self.format, intsample + self.max)
         
-    def gen(self, process, nsamples=0):
-        if not nsamples:
+    def gen(self, process, msec=0):
+        if not msec:
             nsamples = self._nframes - self.tell()
+        else:
+            nsamples = msec * self.getframerate() / 1000
         for pos in range(nsamples):
             sample = process(self, pos)
             self.writeframes(self.bytesample(sample))
