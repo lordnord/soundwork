@@ -28,3 +28,10 @@ def noise(file, pos):
     
 def zfill(file, pos):
     return 0
+    
+def merge(*funcs):
+    'Merge results of calls by arithmetic mean.'
+    def wrapped(file, pos):
+        all = [func(file, pos) for func in funcs]
+        return (sum(all) / len(all))
+    return wrapped
