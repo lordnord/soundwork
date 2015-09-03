@@ -47,7 +47,7 @@ def parser(melody):
         yield (freq, int(muslength(eval(len))))
         # yield (freq, int(len))
 
-def seqencelenght(seq, bpm=None):
+def sequencelenght(seq, bpm=None):
     # BPM is temporary not used.
     lenght = 0
     for note in parser(seq):

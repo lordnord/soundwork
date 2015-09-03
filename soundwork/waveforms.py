@@ -1,3 +1,4 @@
+from __future__ import division
 import math
 import random
 
@@ -33,5 +34,5 @@ def merge(*funcs):
     'Merge results of calls by arithmetic mean.'
     def wrapped(file, pos):
         all = [func(file, pos) for func in funcs]
-        return (sum(all) / len(all))
+        return int(sum(all) / len(all))
     return wrapped
