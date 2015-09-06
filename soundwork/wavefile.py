@@ -62,6 +62,7 @@ class WriteMono(wave.Wave_write, Mono):
             nsamples = self._nframes - self.tell()
         else:
             nsamples = msec * self.getframerate() / 1000
+            print nsamples
         for pos in range(nsamples):
             sample = process(self, pos)
             self.writeframes(self.bytesample(sample))

@@ -44,13 +44,10 @@ def parser(melody):
         else:
             len, sign, octave = note.split('.')
             freq = NOTES[sign] / (2 ** (10-int(octave)))
-        yield (freq, int(muslength(eval(len))))
-        # yield (freq, int(len))
+        #yield (freq, int(muslength(eval(len))))
+        yield (freq, int(len))
 
-def sequencelenght(seq, bpm=None):
+def sequencelength(seq, bpm=None):
     # BPM is temporary not used.
-    lenght = 0
-    for note in parser(seq):
-        lenght += note[1]
-    return lenght
+    return sum(x[1] for x in parser(seq))
 
