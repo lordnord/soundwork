@@ -2,21 +2,14 @@
 import wave
 import struct
 
+from . import waveforms
 
 class Mono:
     FORMATS = (None, 'B', 'H') # 8bit or 16bit
-    
-    def hardclip(process):
-        def _f(*args):
-            pass
             
     @property
     def format(self):
         return '<' + self.FORMATS[self._sampwidth]
-        
-    @property
-    def max(self):
-        return 2 ** (8 ** self.getsampwidth() - 1)
         
     def amplit(self, percent):
         out = percent * (self.max - 1)/100.0
@@ -24,6 +17,9 @@ class Mono:
 
 
 class ReadMono(wave.Wave_read, Mono):
+    def __init__(self, *args):
+        wave.Wave_read.__init__(self, *args)
+        self.max = 2 ** (8 ** self._sampwidth - 1)
     
     def intsample(self, bytesample):
         return struct.unpack(self.format, bytesample)[0] - self.max
@@ -40,18 +36,19 @@ class ReadMono(wave.Wave_read, Mono):
             
 class WriteMono(wave.Wave_write, Mono):
     def set(self, bit=None, samplerate=None, file=None):
-        if kw:
+        if file:
             self.setparams(file.getparams())
         else:
             xparams = (
                 1,       # self._nchannels
-                bit / 8, # self._nsampwidth
+                bit / 8, # self._sampwidth
                 samplerate,
                 0,       # self._nframes
                 'NONE',
                 'not compressed',
                 )
             self.setparams(xparams)
+            self.max = 2 ** (8 ** self._sampwidth - 1)
 
     def bytesample(self, intsample):
         return struct.pack(self.format, intsample + self.max)

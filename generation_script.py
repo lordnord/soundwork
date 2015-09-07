@@ -8,7 +8,7 @@ msec_notation = """100.C#.4 100.P 100.C#.4 100.P 100.C.4
 new = wavefile.open('buildy.wav', 'w')
 new.set(8, 44100)
 
-for freq, leng in notes.parser(melody2, bpm=130):
+for freq, leng in notes.parser(melody2 * 4, bpm=130):
     new.gen(waveforms.square(freq), leng)
     
 new.close()
