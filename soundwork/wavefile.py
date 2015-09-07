@@ -3,6 +3,7 @@ import wave
 import struct
 
 from . import waveforms
+from . import notes
 
 class Mono:
     FORMATS = (None, 'B', 'H') # 8bit or 16bit
@@ -67,6 +68,21 @@ class WriteMono(wave.Wave_write, Mono):
         for pos, sample in enumerate(file.getsamples()):
             out = process(self, sample, pos)
             self.writeframes(self.bytesample(out))
+            
+    def fromnotes(self, seq, waves, bpm=None):
+        'High level interface.'
+        one_wave = len(waves) == 2 and isinstance(waves[1], int)
+        for freq, length in notes.parser(seq, bpm):
+            if one_wave:
+                print 'one'
+                form, coef = waves
+                merged = form(freq * coef)
+            else:
+                print 'many' 
+                # list of waves
+                freq_waves = tuple(form(freq * coef) for form, coef in waves)
+                merged = waveforms.merge(*freq_waves)
+            self.gen(merged, length)
 
             
             
