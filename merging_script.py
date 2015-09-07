@@ -8,7 +8,7 @@ melody = """1/8 E6 D#6 E6 D#6 E6 B5 D6 C6 3/8 A5 1/8 _ E5 A5
 3/8 B5 1/8 E5 G#5 B5 3/8 C6 _"""
 
 new = wavefile.open('build-merg.wav', 'w')
-new.set(8, 44100, 0)
+new.set(8, 44100)
 
 def merging():
     for freq, length in notes.parser(melody, bpm=50):

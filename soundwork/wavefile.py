@@ -39,16 +39,15 @@ class ReadMono(wave.Wave_read, Mono):
 
             
 class WriteMono(wave.Wave_write, Mono):
-    def set(self, *params, **kw):
+    def set(self, bit=None, samplerate=None, file=None):
         if kw:
-            self.setparams(kw['file'].getparams())
+            self.setparams(file.getparams())
         else:
-            bit, samplerate, msec = params
             xparams = (
                 1,       # self._nchannels
                 bit / 8, # self._nsampwidth
                 samplerate,
-                0, # self._nframes
+                0,       # self._nframes
                 'NONE',
                 'not compressed',
                 )
