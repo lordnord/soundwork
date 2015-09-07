@@ -9,6 +9,6 @@ new = wavefile.open('buildy.wav', 'w')
 new.set(8, 44100, notes.sequencelength(melody2, bpm=130))
 
 for freq, leng in notes.parser(melody2, bpm=130):
-    new.gen(waveforms.sine(freq), leng)
+    new.gen(waveforms.square(freq), leng)
     
 new.close()

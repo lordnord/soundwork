@@ -11,7 +11,14 @@ def sine(freq):
 
 def square(freq):
     def wrapped(file, pos):
-        return None
+        w = (2 * math.pi * freq) / file.getframerate()
+        res = math.sin(pos * w)
+        if res > 0:
+            return file.amplit(100)
+        elif res < 0:
+            return file.amplit(-100)
+        else:
+            return 0
     return wrapped
     
 def triangular(freq):
