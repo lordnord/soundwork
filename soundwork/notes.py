@@ -1,4 +1,5 @@
 from __future__ import division
+from fractions import Fraction
 
 # Note frequencies for 10th octave
 NOTES = {
@@ -15,6 +16,9 @@ NOTES = {
 'A#' : 29834.481,
 'B'  : 31608.531,
 }
+
+class NotationError(Exception):
+    pass
 
 def single(note):
     'Generates frequency by note sign and octave'
@@ -35,7 +39,7 @@ def muslength(le, bpm=None):
 
 muslength.last = 70
 
-def parser(melody):
+def msec_parser(melody):
     melody = melody.strip().replace('\n', ' ').split(' ')
     for note in melody:
         if 'P' in note:
@@ -44,10 +48,32 @@ def parser(melody):
         else:
             len, sign, octave = note.split('.')
             freq = NOTES[sign] / (2 ** (10-int(octave)))
-        #yield (freq, int(muslength(eval(len))))
         yield (freq, int(len))
 
+def bpm_parser(melody, bpm):
+    melody = melody.strip().replace('\n', ' ').split(' ')
+    if '/' not in melody[0]:
+        raise NotationError("Notes length isn't specified.")
+        
+    for record in melody:
+        if '/' in record:
+            note_len = Fraction(record) * 60000 / bpm
+            continue
+            
+        if record in ('_', 'P'):
+            freq = 0
+        else:
+            sign, octave = record[:-1], record[-1]
+            freq = NOTES[sign] / (2 ** (10-int(octave)))
+            
+        yield (freq, int(note_len))
+    
+def parser(melody, bpm=None):
+    if bpm:
+        return bpm_parser(melody, bpm)
+    else:
+        return msec_parser(melody)
+
 def sequencelength(seq, bpm=None):
-    # BPM is temporary not used.
-    return sum(x[1] for x in parser(seq))
+    return sum(x[1] for x in parser(seq, bpm))
 
