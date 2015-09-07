@@ -48,7 +48,7 @@ class WriteMono(wave.Wave_write, Mono):
                 1,       # self._nchannels
                 bit / 8, # self._nsampwidth
                 samplerate,
-                msec * samplerate / 1000, # self._nframes
+                0, # self._nframes
                 'NONE',
                 'not compressed',
                 )
