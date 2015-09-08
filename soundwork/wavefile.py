@@ -8,10 +8,10 @@ from . import notes
 class Mono:
     FORMATS = (None, 'B', 'H') # 8bit or 16bit
             
-    @property
-    def format(self):
-        return '<' + self.FORMATS[self._sampwidth]
-        
+    def after_init(self):
+        self.max = 2 ** (8 ** self._sampwidth - 1)
+        self.format = '<' + self.FORMATS[self._sampwidth]
+
     def amplit(self, percent):
         out = percent * (self.max - 1)/100.0
         return int(out)
@@ -20,8 +20,8 @@ class Mono:
 class ReadMono(wave.Wave_read, Mono):
     def __init__(self, *args):
         wave.Wave_read.__init__(self, *args)
-        self.max = 2 ** (8 ** self._sampwidth - 1)
-    
+        self.after_init()
+        
     def intsample(self, bytesample):
         return struct.unpack(self.format, bytesample)[0] - self.max
 
@@ -49,7 +49,7 @@ class WriteMono(wave.Wave_write, Mono):
                 'not compressed',
                 )
             self.setparams(xparams)
-            self.max = 2 ** (8 ** self._sampwidth - 1)
+            self.after_init()
 
     def bytesample(self, intsample):
         return struct.pack(self.format, intsample + self.max)
