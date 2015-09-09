@@ -60,9 +60,8 @@ class WriteMono(wave.Wave_write, Mono):
         else:
             nsamples = msec * self.getframerate() / 1000
             print nsamples
-        for pos in range(nsamples):
-            sample = process(self, pos)
-            self.writeframes(self.bytesample(sample))
+        frames = [self.bytesample(process(self, pos)) for pos in range(nsamples)]
+        self.writeframes(''.join(frames))
             
     def writefromfile(self, file, process):
         for pos, sample in enumerate(file.getsamples()):
