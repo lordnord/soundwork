@@ -40,15 +40,10 @@ class WriteMono(wave.Wave_write, Mono):
         if file:
             self.setparams(file.getparams())
         else:
-            xparams = (
-                1,       # self._nchannels
-                bit / 8, # self._sampwidth
-                samplerate,
-                0,       # self._nframes
-                'NONE',
-                'not compressed',
-                )
-            self.setparams(xparams)
+            self.setnchannels(1)
+            self.setsampwidth(bit / 8)
+            self.setframerate(samplerate)
+            self.setcomptype('NONE', 'not compressed')
             self.after_init()
 
     def bytesample(self, intsample):
