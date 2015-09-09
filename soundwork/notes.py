@@ -47,7 +47,7 @@ class Note:
             return self.sign + str(self.octave)
 
 
-def muslength(fraction_length, bpm=None):
+def muslength(fraction_length, bpm):
     'Returns note length in ms for BPM'
     return 60000.0 * fraction_lenght / bpm
 
@@ -65,6 +65,18 @@ def parser(melody, bpm, default_len=1/4):
         yield Note(record).freq, int(default_len)
   
 
-def sequencelength(seq, bpm=None):
-    return sum(x[1] for x in parser(seq, bpm))
+def sequencelength(seq, bpm, default_len=1/4):
+    melody = melody.strip().replace('\n', ' ').split(' ')
+        
+    length = 0
+    for record in melody:
+        if record == '':
+            continue
+        if '/' in record:
+            default_len = Fraction(record) * 60000.0 / bpm
+            continue
+        length += default_len
+        
+    return length
+    
 
