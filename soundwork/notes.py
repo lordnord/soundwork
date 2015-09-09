@@ -18,34 +18,67 @@ NOTES = {
 'B'  : 31608.531,
 PAUSE: 0,
 }
+OCTAVE = 12
+INDEX = 'None C C# D D# E F F# G G# A A# B'.split(' ')
 
 class NotationError(Exception):
     pass
 
-class Note:
+def Note(note):
+    if note == PAUSE:
+        return PauseNote(note)
+    else:
+        return ActualNote(note)
+    
+class PauseNote(object):
+    freq = 0
+    sign = PAUSE
+
+    def __init__(self, note):
+        if note != PAUSE:
+            raise ValueError('bad pause note')
+    def __str__(self):
+        return self.sign
+    def up(self):
+        'Silently skip impossible action'
+    def down(self):
+        'Silently skip impossible action'
+
+class ActualNote(object):
     def __init__(self, note):
         if isinstance(note, str):
-            if note == PAUSE:
-                self.sign = PAUSE
-                self.octave = None
-            else:
-                self.sign, self.octave = note[:-1], int(note[-1])
+            self.sign, self.octave = note[:-1], int(note[-1])
         else:
             self.sign, self.octave = note
         self._updatefreq()
         
     def _updatefreq(self):
-        if self.sign == PAUSE:
-            self.freq = 0
-        else:
-            self.freq = NOTES[self.sign] / (2 ** (10-self.octave))
+        self.freq = NOTES[self.sign] / (2 ** (10-self.octave))
         
     def __str__(self):
-        if self.sign == PAUSE:
-            return self.sign
-        else:
-            return self.sign + str(self.octave)
-
+        return self.sign + str(self.octave)
+    
+    @property
+    def sign(self):
+        return INDEX[self.num]
+        
+    @sign.setter
+    def sign(self, newsign):
+        self.num = INDEX.index(newsign)
+    
+    def up(self, num):
+        deltanote = num % OCTAVE
+        deltaoctave = num // OCTAVE
+        
+        self.num += deltanote 
+        self.octave += deltaoctave
+        
+    def down(self, num):
+        deltanote = num % OCTAVE
+        deltaoctave = num // OCTAVE
+        
+        self.num -= deltanote
+        self.octave -= deltaoctave
 
 def muslength(fraction_length, bpm):
     'Returns note length in ms for BPM'
@@ -79,4 +112,3 @@ def sequencelength(seq, bpm, default_len=1/4):
         
     return length
     
-
