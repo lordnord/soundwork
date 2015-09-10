@@ -28,7 +28,10 @@ def triangular(freq):
     
 def sawtooth(freq):
     def wrapped(file, pos):
-        return None
+        w = (2 * math.pi * freq) / file.getframerate()
+        if w == 0: return 0
+        step = file.max * 2 / w
+        return int((pos % w) * step) - file.max
     return wrapped
     
 def noise(file, pos):
