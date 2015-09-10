@@ -1,6 +1,7 @@
 # coding: utf8
 import wave
 import struct
+from numbers import Number
 
 from . import waveforms
 from . import notes
@@ -65,7 +66,7 @@ class WriteMono(wave.Wave_write, Mono):
             
     def fromnotes(self, seq, waves, bpm=None):
         'High level interface.'
-        one_wave = len(waves) == 2 and isinstance(waves[1], int)
+        one_wave = len(waves) == 2 and isinstance(waves[1], Number)
         for freq, length in notes.parser(seq, bpm):
             if one_wave:
                 print 'one'
