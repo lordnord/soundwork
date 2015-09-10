@@ -1,5 +1,9 @@
-test
+test/
+local/
+
+my-*.py
 *.pyc
+
 new*.wav
 build*.wav
 gen*.wav
