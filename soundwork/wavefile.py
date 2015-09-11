@@ -67,7 +67,9 @@ class WriteMono(wave.Wave_write, Mono):
     def fromnotes(self, seq, waves, bpm=None):
         'High level interface.'
         one_wave = len(waves) == 2 and isinstance(waves[1], Number)
-        for note, length in notes.parser(seq, bpm):
+        if isinstance(seq, basestring):
+            seq = notes.Sequence(seq)
+        for note, length in seq.parser(bpm):
             if one_wave:
                 print 'one'
                 form, coef = waves

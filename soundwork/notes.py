@@ -54,9 +54,9 @@ class ActualNote(object):
             self.value = INDEX.index(sign) + int(octave) * 12
         elif isinstance(note, int):
             self.value = note
-        elif isinstance(ActualNote, note):
+        elif isinstance(note, ActualNote):
             self.value = note.value
-        elif isinstance(Iterable, note):
+        elif isinstance(note, Iterable):
             sign, octave = note
             self.value = INDEX.index(sign) + octave * 12 
 
@@ -89,6 +89,70 @@ class ActualNote(object):
     def down(self, num):
         self.value -= num
 
+        
+        
+class Sequence(object):
+    def __init__(self, data):
+        if isinstance(data, basestring):
+            data = data.replace('\n', ' ')
+            self._init_parser(x for x in data.split(' ') if x)
+        elif isinstance(data, Iterable):
+            self._init_parser(data)
+        elif isinstance(data, Sequence):
+            self.data = data.data
+        
+    def _init_parser(self, iterable):
+        self.data = []
+        for value in iterable:
+            if '/' in value:
+                self.data.append(Fraction(value))
+            else:
+                self.data.append(Note(value))
+            
+    def __str__(self):
+        return ' '.join(self.data)
+        
+    def __len__(self, bpm, default_len=1/4):
+        'Length in milliseconds'
+        length = 0
+        for value in self.data:
+            if isinstance(value, Fraction):
+                default_len = value * 60000.0 / bpm
+                continue
+        length += default_len
+        return length
+        
+     
+    def parser(self, bpm, default_len=1/4):
+        'Generator yields notes and their length'
+        for value in self.data:
+            if isinstance(value, Fraction):
+                default_len = value * 60000.0 / bpm
+                continue
+            yield value, int(default_len)
+        
+    def __mul__(self, num):
+        return Sequence(self.value * num)
+        
+    def __add__(self, seq):
+        return Sequence(self.value + seq.value)
+        
+    def up(self, num):
+        for value in self.data:
+            if isinstance(value, ActualNote):
+                value.up(num)
+                
+    def down(self, num):
+        for value in self.data:
+            if isinstance(value, ActualNote):
+                value.down(num)
+                
+    def change_fractions(self, coef):
+        for i, value in enumerate(self.data):
+            if isinstance(value, Fraction):
+                data[i] = value * coef
+        
+        
 def muslength(fraction_length, bpm):
     'Returns note length in ms for BPM'
     return 60000.0 * fraction_lenght / bpm
