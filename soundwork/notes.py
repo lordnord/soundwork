@@ -111,7 +111,7 @@ class Sequence(object):
                 self.data.append(Note(value))
             
     def __str__(self):
-        return ' '.join(self.data)
+        return ' '.join(str(x) for x in self.data)
         
     def __len__(self):
         'Length in milliseconds'

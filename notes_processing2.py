@@ -11,6 +11,7 @@ instr = [sine, 1], [square, 4]
 
 for i in range(7):
     melody.up(OCTAVE)
+    print melody
     new.fromnotes(melody, instr, bpm=70)
         
 new.close()
