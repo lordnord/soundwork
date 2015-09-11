@@ -100,6 +100,7 @@ class Sequence(object):
             self._init_parser(data)
         elif isinstance(data, Sequence):
             self.data = data.data
+        self.bpm = None
         
     def _init_parser(self, iterable):
         self.data = []
@@ -112,19 +113,21 @@ class Sequence(object):
     def __str__(self):
         return ' '.join(self.data)
         
-    def __len__(self, bpm, default_len=1/4):
+    def __len__(self):
         'Length in milliseconds'
         length = 0
         for value in self.data:
             if isinstance(value, Fraction):
-                default_len = value * 60000.0 / bpm
+                default_len = value * 60000.0 / self.bpm
                 continue
-        length += default_len
+            length += default_len
         return length
         
      
-    def parser(self, bpm, default_len=1/4):
-        'Generator yields notes and their length'
+    def parser(self, bpm=None, default_len=1/4):
+        'Yield notes and their length'
+        if bpm is None:
+            bpm = self.bpm
         for value in self.data:
             if isinstance(value, Fraction):
                 default_len = value * 60000.0 / bpm
