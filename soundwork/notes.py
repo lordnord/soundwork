@@ -155,6 +155,17 @@ class Sequence(object):
             if isinstance(value, Fraction):
                 data[i] = value * coef
         
+    def reverse(self):
+        new = []
+        under_fraction = []
+        for value in reversed(self.data):
+            if isinstance(value, Fraction):
+                new.append(value)
+                new.extend(under_fraction)
+                under_fraction = []
+            else:
+                under_fraction.append(value)
+        self.data = list(new)
         
 def muslength(fraction_length, bpm):
     'Returns note length in ms for BPM'
