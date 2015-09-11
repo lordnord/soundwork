@@ -67,15 +67,15 @@ class WriteMono(wave.Wave_write, Mono):
     def fromnotes(self, seq, waves, bpm=None):
         'High level interface.'
         one_wave = len(waves) == 2 and isinstance(waves[1], Number)
-        for freq, length in notes.parser(seq, bpm):
+        for note, length in notes.parser(seq, bpm):
             if one_wave:
                 print 'one'
                 form, coef = waves
-                merged = form(freq * coef)
+                merged = form(note.freq * coef)
             else:
                 print 'many' 
                 # list of waves
-                freq_waves = tuple(form(freq * coef) for form, coef in waves)
+                freq_waves = tuple(form(note.freq * coef) for form, coef in waves)
                 merged = waveforms.merge(*freq_waves)
             self.gen(merged, length)
 

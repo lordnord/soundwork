@@ -1,5 +1,6 @@
 from __future__ import division
 from fractions import Fraction
+from collections import Iterable
 
 PAUSE = '_'
 # Note frequencies for 10th octave
@@ -19,7 +20,7 @@ NOTES = {
 PAUSE: 0,
 }
 OCTAVE = 12
-INDEX = 'None C C# D D# E F F# G G# A A# B'.split(' ')
+INDEX = 'C C# D D# E F F# G G# A A# B'.split(' ')
 
 class NotationError(Exception):
     pass
@@ -33,7 +34,9 @@ def Note(note):
 class PauseNote(object):
     freq = 0
     sign = PAUSE
-
+    octave = None
+    value = None
+    
     def __init__(self, note):
         if note != PAUSE:
             raise ValueError('bad pause note')
@@ -46,39 +49,45 @@ class PauseNote(object):
 
 class ActualNote(object):
     def __init__(self, note):
-        if isinstance(note, str):
-            self.sign, self.octave = note[:-1], int(note[-1])
-        else:
-            self.sign, self.octave = note
-        self._updatefreq()
-        
-    def _updatefreq(self):
-        self.freq = NOTES[self.sign] / (2 ** (10-self.octave))
+        if isinstance(note, basestring):
+            sign, octave = note[:-1], note[-1]
+            self.value = INDEX.index(sign) + int(octave) * 12
+        elif isinstance(note, int):
+            self.value = note
+        elif isinstance(ActualNote, note):
+            self.value = note.value
+        elif isinstance(Iterable, note):
+            sign, octave = note
+            self.value = INDEX.index(sign) + octave * 12 
+
+    @property
+    def freq(self):
+        return NOTES[self.sign] / (2 ** (10-self.octave))
         
     def __str__(self):
         return self.sign + str(self.octave)
     
     @property
     def sign(self):
-        return INDEX[self.num]
+        return INDEX[self.value % 12]
         
     @sign.setter
     def sign(self, newsign):
-        self.num = INDEX.index(newsign)
+        self.value = self.octave*12 + INDEX.index(newsign)
+        
+    @property
+    def octave(self):
+        return self.value // 12
+        
+    @octave.setter
+    def octave(self, value):
+        self.value = value*12 + self.value%12
     
     def up(self, num):
-        deltanote = num % OCTAVE
-        deltaoctave = num // OCTAVE
-        
-        self.num += deltanote 
-        self.octave += deltaoctave
+        self.value += num
         
     def down(self, num):
-        deltanote = num % OCTAVE
-        deltaoctave = num // OCTAVE
-        
-        self.num -= deltanote
-        self.octave -= deltaoctave
+        self.value -= num
 
 def muslength(fraction_length, bpm):
     'Returns note length in ms for BPM'
@@ -95,7 +104,7 @@ def parser(melody, bpm, default_len=1/4):
             default_len = Fraction(record) * 60000.0 / bpm
             continue
             
-        yield Note(record).freq, int(default_len)
+        yield Note(record), int(default_len)
   
 
 def sequencelength(seq, bpm, default_len=1/4):
